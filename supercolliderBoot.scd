@@ -40,14 +40,13 @@ s.reboot { // server options are only updated on reboot
 	};
 
 	s.latency = 0.3; // increase this if you get "late" messages
-
+	SuperDirt.addSynth(\superpiano);
 
 };
 )
 
 
 OSCFunc.trace(true);
-
 s.dumpOSC(0);
 OSCFunc.trace(false);
 
@@ -81,8 +80,9 @@ SynthDef("sine", { |freq = 660|
 p = Pbind(
 	\type, \dirt,
 	\dirt, ~dirt,
-	\sound, "yeah",
+	\s, \808,
+	\n, 3,
     \dur, 1,
-	\midinote, 50
+	\amp, 1,
 ).play(~clock);
 )
