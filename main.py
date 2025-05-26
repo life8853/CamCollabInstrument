@@ -1,7 +1,5 @@
 import mediapipe as mp
-from mediapipe.tasks import python
-from mediapipe.tasks.python import vision
-import queue
+from helper_functions import *
 
 import cv2 as cv
 import numpy as np
@@ -45,6 +43,7 @@ def draw_landmarks_on_image(rgb_image, detection_result):
                 for landmark in pose_landmarks
             ]
         )
+
         solutions.drawing_utils.draw_landmarks(
             annotated_image,
             pose_landmarks_proto,
@@ -63,7 +62,7 @@ def main():
 
     with PoseLandmarker.create_from_options(options) as landmarker:
 
-        cam = cv.VideoCapture(0)
+        cam = cv.VideoCapture(1)
         if not cam.isOpened():
             print("Cannot open camera")
             exit()
@@ -86,7 +85,9 @@ def main():
             if (frame_id % (SKIP_FRAMES +1) == 0):
                 try:
                     mpImage = mp.Image(image_format=mp.ImageFormat.SRGB, data=bgr_frame)
-                    frameTimestampMs = int(cam.get(cv.CAP_PROP_POS_MSEC))
+                    # hack beacuse idk something doesnt work
+                    frameTimestampMs = frame_id * 17
+                    # frameTimestampMs = int(cam.get(cv.CAP_PROP_POS_MSEC))
 
                     results = landmarker.detect_for_video(mpImage, frameTimestampMs)
                     frame = draw_landmarks_on_image(
