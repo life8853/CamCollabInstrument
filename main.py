@@ -4,7 +4,7 @@ from helper_functions import *
 import cv2 as cv
 import numpy as np
 
-MODEL_PATH = "./pose_landmarker_full.task"
+MODEL_PATH = "./CamCollabInstrument/pose_landmarker_full.task"
 SKIP_FRAMES = 8
 
 BaseOptions = mp.tasks.BaseOptions
@@ -62,7 +62,7 @@ def main():
 
     with PoseLandmarker.create_from_options(options) as landmarker:
 
-        cam = cv.VideoCapture(1)
+        cam = cv.VideoCapture(3)
         if not cam.isOpened():
             print("Cannot open camera")
             exit()
@@ -88,8 +88,12 @@ def main():
                     # hack beacuse idk something doesnt work
                     frameTimestampMs = frame_id * 17
                     # frameTimestampMs = int(cam.get(cv.CAP_PROP_POS_MSEC))
-
+                    
                     results = landmarker.detect_for_video(mpImage, frameTimestampMs)
+                    person_1 = ActuallyFuckingUsefulPose(results, 0)
+                    print(person_1.isRightHandFurtherThanElbeow())
+
+                    
                     frame = draw_landmarks_on_image(
                         cv.cvtColor(bgr_frame, cv.COLOR_BGR2RGB), results
                     )

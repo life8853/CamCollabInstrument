@@ -56,9 +56,44 @@ class ActuallyFuckingUsefulPose:
     def get(self, keypoint: Keypoints):
         return self.keypoints[keypoint.value]
     
-def isLeftHandUpStraight(pose: ActuallyFuckingUsefulPose):
-    left_elbow = pose.get(Keypoints.LEFT_ELBOW)
-    left_wrist = pose.get(Keypoints.LEFT_WRIST)
-    # print(left_elbow.x - left_wrist.x)
-    if abs(left_elbow.x - left_wrist.x) < 0.03:
-        print("straight up")
+    def isLeftHandUpStraight(self):
+        left_elbow = self.get(Keypoints.LEFT_ELBOW)
+        left_wrist = self.get(Keypoints.LEFT_WRIST)
+        # print(left_elbow.x - left_wrist.x)
+        if abs(left_elbow.x - left_wrist.x) < 0.03 and left_elbow.y - left_wrist.y > 0.05:
+            return True
+        return False
+    
+    def isRightHandFurtherThanElbeow(self):
+        right_elbow = self.get(Keypoints.RIGHT_ELBOW)
+        right_wrist = self.get(Keypoints.RIGHT_WRIST)
+        if right_elbow.x - right_wrist.x > 0.05:
+            return True
+        return False
+
+    def howHighIsLefttHand(self):
+        left_wrist = self.get(Keypoints.LEFT_WRIST)
+        right_shoulder = self.get(Keypoints.RIGHT_SHOULDER)
+        dif = left_wrist.y - right_shoulder.y
+        if 0.05 > dif > -0.05:
+            return 0
+        elif -0.05 > dif > -0.15:
+            return 1
+        elif -0.15 > dif > -0.25:
+            return 2
+        elif -0.25 > dif > -0.35:
+            return 3
+        elif -0.35 > dif > -0.45:
+            return 4
+        elif -0.45 > dif:
+            return 5
+        elif 0.15 > dif > 0.05:
+            return -1
+        elif 0.25 > dif > 0.15:
+            return -2
+        elif 0.35 > dif > 0.25:
+            return -3
+        elif 0.45 > dif > 0.35:
+            return -4
+        elif dif > 0.45:
+            return -5
