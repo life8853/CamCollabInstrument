@@ -73,8 +73,8 @@ class ActuallyFuckingUsefulPose:
 
     def howHighIsLefttHand(self):
         left_wrist = self.get(Keypoints.LEFT_WRIST)
-        right_shoulder = self.get(Keypoints.RIGHT_SHOULDER)
-        dif = left_wrist.y - right_shoulder.y
+        left_shoulder = self.get(Keypoints.RIGHT_SHOULDER)
+        dif = left_wrist.y - left_shoulder.y
         if 0.05 > dif > -0.05:
             return 0
         elif -0.05 > dif > -0.15:
