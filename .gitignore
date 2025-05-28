@@ -172,3 +172,12 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+
+# Stuff because they dont use uv
+.python-version
+pyproject.toml
+uv.lock
+
+# I have tu put it as global ignore
+.DS_Store
