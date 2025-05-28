@@ -90,8 +90,7 @@ def main():
 
                     results = landmarker.detect_for_video(mpImage, frameTimestampMs)
                     person_1 = ActuallyFuckingUsefulPose(results, 0)
-                    if person_1.isCinema(Side.RIGHT):
-                        print("Cinema")
+                    print(person_1.howHighIsLefttHand(Side.RIGHT))
 
                     frame = draw_landmarks_on_image(
                         cv.cvtColor(bgr_frame, cv.COLOR_BGR2RGB), results

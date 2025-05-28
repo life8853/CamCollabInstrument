@@ -93,7 +93,7 @@ class ActuallyFuckingUsefulPose:
             wrist = self.get(Keypoints.LEFT_WRIST)
             shoulder = self.get(Keypoints.LEFT_SHOULDER)
         elif side == Side.RIGHT:
-            wrist = self.get(Keypoints.RIGHt_WRIST)
+            wrist = self.get(Keypoints.RIGHT_WRIST)
             shoulder = self.get(Keypoints.RIGHT_SHOULDER)
 
         dif = wrist.y - shoulder.y
