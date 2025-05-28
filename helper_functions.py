@@ -62,19 +62,6 @@ class ActuallyFuckingUsefulPose:
     def get(self, keypoint: Keypoints):
         return self.keypoints[keypoint.value]
 
-    # TODO: this name could probably be better but i'm just vibin'
-    def isHandUp(self, side: Side):
-        if side == Side.LEFT:
-            elbow = self.get(Keypoints.LEFT_ELBOW)
-            wrist = self.get(Keypoints.LEFT_WRIST)
-        elif side == Side.RIGHT:
-            elbow = self.get(Keypoints.RIGHT_ELBOW)
-            wrist = self.get(Keypoints.RIGHT_WRIST)
-
-        if (abs(elbow.x - wrist.x) < 0.03) and (elbow.y - wrist.y > 0.05):
-            return True
-        return False
-
     def isHandFurtherThanElbeow(self, side: Side):
         if side == Side.LEFT:
             elbow = self.get(Keypoints.LEFT_ELBOW)
@@ -88,7 +75,7 @@ class ActuallyFuckingUsefulPose:
         return False
 
     # chatgpt code
-    def howHighIsLefttHand(self, side: Side):
+    def howHighIsHand(self, side: Side):
         if side == Side.LEFT:
             wrist = self.get(Keypoints.LEFT_WRIST)
             shoulder = self.get(Keypoints.LEFT_SHOULDER)
@@ -136,4 +123,4 @@ class ActuallyFuckingUsefulPose:
             angle_rad = math.acos(dot_product / (mag_ba * mag_bc))
             return math.degrees(angle_rad)
 
-        return calculate_angle(wrist, elbow, shoulder) > 75
+        return not calculate_angle(wrist, elbow, shoulder) > 75

@@ -1,6 +1,6 @@
 
 (
-~clock = TempoClock.new(2.0);
+// ~clock = TempoClock.new(2.0);
 ~instrument = \bd;
 ~sampleNumber = 22;
 ~note = 60;
@@ -11,23 +11,23 @@
 	\dirt, ~dirt,
 	\s, Pfunc{~instrument},
 	\n, Pfunc{~sampleNumber},
-	\midinote, Pfunc{~note},
+	\midinote, Pseq([~note],1),
     \dur, 1,
 	\amp, 1,
 
 	//reverb
 	\size,   0.2,
-	\room,   Pfunc {~reverbOn.if({0.5}, {0.0})},
-    \dry,    Pfunc {~reverbOn.if({0.7}, {0.0})}
+	\room,   Pfunc{~reverbOn.if({0.5}, {0.0})},
+	\dry,    Pfunc{~reverbOn.if({0.7}, {0.0})}
 );
 
-~player = ~pattern.play().stop();
+~player = ~pattern.play();
 
 
 OSCdef.new(
 	\startpattern,
 	{|msg, time, addr, recvPort|
-		~player.play()
+		~pattern.play()
 	},
 	'/startpattern'
 );
@@ -67,8 +67,9 @@ OSCdef.new(
 	'/setreverb'
 );
 
-
 )
+
+~pattern.play()
 
 (
 Pbind(
