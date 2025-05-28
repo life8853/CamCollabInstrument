@@ -1,5 +1,6 @@
 from enum import Enum
 from mediapipe.framework.formats import landmark_pb2
+import math
 
 
 class Keypoints(Enum):
@@ -38,6 +39,11 @@ class Keypoints(Enum):
     RIGHT_FOOT_INDEX = 32
 
 
+class Side(Enum):
+    LEFT = "LEFT"
+    RIGHT = "RIGHT"
+
+
 class ActuallyFuckingUsefulPose:
     def __init__(self, landmarks, poseToExtract):
         pose_landmarks = landmarks.pose_landmarks
@@ -52,48 +58,82 @@ class ActuallyFuckingUsefulPose:
         )
 
         self.keypoints = poseFiltered.landmark
-    
+
     def get(self, keypoint: Keypoints):
         return self.keypoints[keypoint.value]
-    
-    def isLeftHandUpStraight(self):
-        left_elbow = self.get(Keypoints.LEFT_ELBOW)
-        left_wrist = self.get(Keypoints.LEFT_WRIST)
-        # print(left_elbow.x - left_wrist.x)
-        if abs(left_elbow.x - left_wrist.x) < 0.03 and left_elbow.y - left_wrist.y > 0.05:
-            return True
-        return False
-    
-    def isRightHandFurtherThanElbeow(self):
-        right_elbow = self.get(Keypoints.RIGHT_ELBOW)
-        right_wrist = self.get(Keypoints.RIGHT_WRIST)
-        if right_elbow.x - right_wrist.x > 0.05:
+
+    # TODO: this name could probably be better but i'm just vibin'
+    def isHandUp(self, side: Side):
+        if side == Side.LEFT:
+            elbow = self.get(Keypoints.LEFT_ELBOW)
+            wrist = self.get(Keypoints.LEFT_WRIST)
+        elif side == Side.RIGHT:
+            elbow = self.get(Keypoints.RIGHT_ELBOW)
+            wrist = self.get(Keypoints.RIGHT_WRIST)
+
+        if (abs(elbow.x - wrist.x) < 0.03) and (elbow.y - wrist.y > 0.05):
             return True
         return False
 
-    def howHighIsLefttHand(self):
-        left_wrist = self.get(Keypoints.LEFT_WRIST)
-        left_shoulder = self.get(Keypoints.RIGHT_SHOULDER)
-        dif = left_wrist.y - left_shoulder.y
-        if 0.05 > dif > -0.05:
+    def isHandFurtherThanElbeow(self, side: Side):
+        if side == Side.LEFT:
+            elbow = self.get(Keypoints.LEFT_ELBOW)
+            wrist = self.get(Keypoints.LEFT_WRIST)
+        elif side == Side.RIGHT:
+            elbow = self.get(Keypoints.RIGHT_ELBOW)
+            wrist = self.get(Keypoints.RIGHT_WRIST)
+
+        if elbow.x - wrist.x > 0.05:
+            return True
+        return False
+
+    # chatgpt code
+    def howHighIsLefttHand(self, side: Side):
+        if side == Side.LEFT:
+            wrist = self.get(Keypoints.LEFT_WRIST)
+            shoulder = self.get(Keypoints.LEFT_SHOULDER)
+        elif side == Side.RIGHT:
+            wrist = self.get(Keypoints.RIGHt_WRIST)
+            shoulder = self.get(Keypoints.RIGHT_SHOULDER)
+
+        dif = wrist.y - shoulder.y
+
+        if abs(dif) <= 0.05:
             return 0
-        elif -0.05 > dif > -0.15:
-            return 1
-        elif -0.15 > dif > -0.25:
-            return 2
-        elif -0.25 > dif > -0.35:
-            return 3
-        elif -0.35 > dif > -0.45:
-            return 4
-        elif -0.45 > dif:
-            return 5
-        elif 0.15 > dif > 0.05:
-            return -1
-        elif 0.25 > dif > 0.15:
-            return -2
-        elif 0.35 > dif > 0.25:
-            return -3
-        elif 0.45 > dif > 0.35:
-            return -4
-        elif dif > 0.45:
-            return -5
+
+        bin_no = int((abs(dif) - 0.05) // 0.1) + 1
+        bin_no = min(bin_no, 5)
+
+        sign = 1 if dif > 0 else -1
+        return -sign * bin_no
+
+    def isCinema(self, side: Side):
+        if side == Side.LEFT:
+            wrist = self.get(Keypoints.LEFT_WRIST)
+            elbow = self.get(Keypoints.LEFT_ELBOW)
+            shoulder = self.get(Keypoints.LEFT_SHOULDER)
+        elif side == Side.RIGHT:
+            wrist = self.get(Keypoints.RIGHT_WRIST)
+            elbow = self.get(Keypoints.RIGHT_ELBOW)
+            shoulder = self.get(Keypoints.RIGHT_SHOULDER)
+
+        def calculate_angle(a, b, c):
+            """
+            Returns the angle in degrees at point 'b' formed by points a-b-c.
+            """
+            # Vectors: ba and bc
+            ba_x, ba_y = a.x - b.x, a.y - b.y
+            bc_x, bc_y = c.x - b.x, c.y - b.y
+
+            # Dot product and magnitudes
+            dot_product = ba_x * bc_x + ba_y * bc_y
+            mag_ba = math.sqrt(ba_x**2 + ba_y**2)
+            mag_bc = math.sqrt(bc_x**2 + bc_y**2)
+
+            if mag_ba == 0 or mag_bc == 0:
+                return 0  # avoid division by zero
+
+            angle_rad = math.acos(dot_product / (mag_ba * mag_bc))
+            return math.degrees(angle_rad)
+
+        return calculate_angle(wrist, elbow, shoulder) > 75
