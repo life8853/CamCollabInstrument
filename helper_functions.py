@@ -104,6 +104,8 @@ class ActuallyFuckingUsefulPose:
             elbow = self.get(Keypoints.RIGHT_ELBOW)
             shoulder = self.get(Keypoints.RIGHT_SHOULDER)
 
+        isHandAboveElbow = wrist.y < elbow.y
+
         def calculate_angle(a, b, c):
             """
             Returns the angle in degrees at point 'b' formed by points a-b-c.
@@ -122,5 +124,4 @@ class ActuallyFuckingUsefulPose:
 
             angle_rad = math.acos(dot_product / (mag_ba * mag_bc))
             return math.degrees(angle_rad)
-
-        return not calculate_angle(wrist, elbow, shoulder) > 75
+        return (((calculate_angle(wrist, elbow, shoulder) > 60) and (calculate_angle(wrist, elbow, shoulder) < 95)) and isHandAboveElbow)
